@@ -865,7 +865,7 @@ Specific functions:
 
 #### I. Task type
 
-There are now five task types implemented in the package: `vasp`, `deepmd`, `meam`, `eam_fs`, and `eam_alloy`. An `inter.json` file in json format containing the interaction parameters will be written in the directory of each task. The input examples of the `"interaction"` part of each type can be found below:
+There are now six task types implemented in the package: `vasp`, `abacus`, `deepmd`, `meam`, `eam_fs`, and `eam_alloy`. An `inter.json` file in json format containing the interaction parameters will be written in the directory of each task. The input examples of the `"interaction"` part of each type can be found below:
 
 ##### 1. VASP: 
     
@@ -878,7 +878,21 @@ The default of `potcar_prefix` is "".
 		"potcars":	{"Al": "POTCAR.al", "Mg": "POTCAR.mg"}
 	}
 ```
-##### 2. deepmd:
+##### 2. ABACUS: 
+    
+The default of `potcar_prefix` is "". The path of potcars/orb_files/deepks_desc is `potcar_prefix` + `potcars`/`orb_files`/`deepks_desc`.
+```json
+	"interaction": {
+		"type":		"abacus",
+		"incar":	"abacus_input/INPUT",
+		"potcar_prefix":"abacus_input",
+		"potcars":	{"Al": "pseudo_potential.al", "Mg": "pseudo_potential.mg"},
+		"orb_files": {"Al": "numerical_orb.al", "Mg": "numerical_orb.mg"},
+		"atom_masses": {"Al": 26.9815, "Mg":24.305},
+		"deepks_desc": "jle.orb"
+	}
+```
+##### 3. deepmd:
 
 **Only 1** model can be used in autotest in one working directory and the default `"deepmd_version"` is **1.2.0**.
 
@@ -890,7 +904,7 @@ The default of `potcar_prefix` is "".
                 "deepmd_version":"1.2.0"
 	}
 ```
-##### 3. meam:
+##### 4. meam:
 Please make sure the [USER-MEAMC package](https://lammps.sandia.gov/doc/Packages_details.html#pkg-user-meamc) has already been installed in LAMMPS.
 ```json
 	"interaction": {
@@ -899,7 +913,7 @@ Please make sure the [USER-MEAMC package](https://lammps.sandia.gov/doc/Packages
 		"type_map":      {"Al": 1, "Mg": 2}
 	}
 ```
-##### 4. eam_fs & eam_alloy:
+##### 5. eam_fs & eam_alloy:
 Please make sure the [MANYBODY package](https://lammps.sandia.gov/doc/Packages_details.html#pkg-manybody) has already been installed in LAMMPS
 ```json
 	"interaction": {
@@ -908,6 +922,7 @@ Please make sure the [MANYBODY package](https://lammps.sandia.gov/doc/Packages_d
 		"type_map":      {"Al": 1, "Mg": 2}
 	}
 ```
+ 
 
 #### II. Property type
 
