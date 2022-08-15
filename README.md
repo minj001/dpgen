@@ -13,12 +13,6 @@
          * [Init_surf](#init_surf)
       * [Run: Main Process of Generator](#run-main-process-of-generator)
       * [Test: Auto-test for Deep Generator](#test-auto-test-for-deep-generator)
-         * [Guidelines](#Guidelines)
-         * [Main components](#Main-components)
-         * [Structure relaxation](#Structure-relaxation)
-         * [Property](#Property)
-         * [Refine](#Refine)
-         * [Reproduce](#Reproduce)
       * [Set up machine](#set-up-machine)
       * [Troubleshooting](#troubleshooting)
       * [License](#license)
@@ -114,7 +108,7 @@ tasks or MD tasks will be submitted automatically according to MACHINE.json.
 
 Basically `init_bulk` can be devided into four parts , denoted as `stages` in `PARAM`:
 1. Relax in folder `00.place_ele`
-2. Pertub and scale in folder `01.scale_pert`
+2. Perturb and scale in folder `01.scale_pert`
 3. Run a shor AIMD in folder `02.md`
 4. Collect data in folder `02.md`.
 
@@ -153,7 +147,7 @@ If you want to specify a structure as starting point for `init_bulk`, you may se
 ```
 `init_bulk` support both VASP and ABACUS for first-principle calculation. You can choose the software by specifying the key `init_fp_style`. If `init_fp_style` is not specified, the default software will be VASP. 
 
-When using ABACUS for `init_fp_style`, the keys of the paths of `INPUT` files for relaxation and MD simulations are the same as `INCAR` for VASP, which are `relax_incar` and `md_incar` respectively. You have to additionally specify `relax_kspacing` and `md_kspacing` for k points spacing, and dpgen will automatically generate `KPT` files according to them. You may also use `relax_kpt` and `md_kpt` instead of them for the relative path for `KPT` files of relaxation and MD simulations. However, either `relax_kspacing` and `md_kspacing`, or `relax_kpt` and `md_kpt` is needed. If `from_poscar` is set to `false`, you have to specify `atom_masses` in the same order as `elements`.
+When using ABACUS for `init_fp_style`, the keys of the paths of `INPUT` files for relaxation and MD simulations are the same as `INCAR` for VASP, which are `relax_incar` and `md_incar` respectively. Use `relax_kpt` and `md_kpt` for the relative path for `KPT` files of relaxation and MD simulations. They two can be ommited if `kspacing` (in unit of 1/Bohr) or `gamma_only` has been set in corresponding INPUT files. If `from_poscar` is set to `false`, you have to specify `atom_masses` in the same order as `elements`.
 
 The following table gives explicit descriptions on keys in `PARAM`.
 
@@ -170,18 +164,16 @@ The bold notation of key (such as **Elements**) means that it's a necessary key.
 | relax_incar | String | "....../INCAR" | Path of INCAR for VASP or INPUT for ABACUS for relaxation in VASP. **Necessary** if `stages` include 1.
 | md_incar | String |  "....../INCAR" | Path of INCAR for VASP or INPUT for ABACUS for MD in VASP. **Necessary** if `stages` include 3.|
 | **scale** | List of float | [0.980, 1.000, 1.020] | Scales for transforming cells.
-| **skip_relax** | Boolean | False | If it's true, you may directly run stage 2 (pertub and scale) using an unrelaxed POSCAR.
-| **pert_numb** | Integer | 30 | Number of pertubations for each POSCAR.
+| **skip_relax** | Boolean | False | If it's true, you may directly run stage 2 (perturb and scale) using an unrelaxed POSCAR.
+| **pert_numb** | Integer | 30 | Number of perturbations for each POSCAR.
 | **pert_box** | Float | 0.03 | Percentage of Perturbation for cells.
-| **pert_atom** | Float | 0.01 | Pertubation of each atoms (Angstrom).
+| **pert_atom** | Float | 0.01 | Perturbation of each atoms (Angstrom).
 | **md_nstep** | Integer | 10 | Steps of AIMD in stage 3. If it's not equal to settings via `NSW` in `md_incar`, DP-GEN will follow `NSW`.
 | **coll_ndata** | Integer | 5000 | Maximal number of collected data.
 | type_map | List | [ "Mg", "Al"] | The indices of elements in deepmd formats will be set in this order.
 | init_fp_style | String | "ABACUS" or "VASP" | First-principle software. If this key is abscent, the default value will be "VASP".
 | relax_kpt | String | "....../KPT" | Path of `KPT` file for relaxation in stage 1. Only useful if `init_fp_style` is "ABACUS".
-| relax_kspacing | Integer or List of 3 integers | 10 | kspacing parameter for relaxation in stage 1. Only useful if `init_fp_style` is "ABACUS".
 | md_kpt | String | "....../KPT" | Path of `KPT` file for MD simulations in stage 3. Only useful if `init_fp_style` is "ABACUS".
-| md_kspacing | Integer or List of 3 integers | 10 | kspacing parameter for MD simulations in stage 3. Only useful if `init_fp_style` is "ABACUS".
 | atom_masses | List of float | [24] | List of atomic masses of elements. The order should be the same as `Elements`. Only useful if `init_fp_style` is "ABACUS".
 
 ### Init_surf
@@ -196,7 +188,7 @@ tasks or MD tasks will be submitted automatically according to MACHINE.json.
 
 Basically `init_surf` can be devided into two parts , denoted as `stages` in `PARAM`:
 1. Build specific surface in folder `00.place_ele`
-2. Pertub and scale in folder `01.scale_pert`
+2. Perturb and scale in folder `01.scale_pert`
 
 All stages must be **in order**.
 
@@ -320,10 +312,10 @@ The bold notation of key (such as **Elements**) means that it's a necessary key.
 | **millers** | List of list of Integer | [[1,0,0]] | Miller indices.
 | relax_incar | String | "....../INCAR" | Path of INCAR for relaxation in VASP. **Necessary** if `stages` include 1.
 | **scale** | List of float | [0.980, 1.000, 1.020] | Scales for transforming cells.
-| **skip_relax** | Boolean | False | If it's true, you may directly run stage 2 (pertub and scale) using an unrelaxed POSCAR.
-| **pert_numb** | Integer | 30 | Number of pertubations for each POSCAR.
+| **skip_relax** | Boolean | False | If it's true, you may directly run stage 2 (perturb and scale) using an unrelaxed POSCAR.
+| **pert_numb** | Integer | 30 | Number of perturbations for each POSCAR.
 | **pert_box** | Float | 0.03 | Percentage of Perturbation for cells.
-| **pert_atom** | Float | 0.01 | Pertubation of each atoms (Angstrom).
+| **pert_atom** | Float | 0.01 | Perturbation of each atoms (Angstrom).
 | **coll_ndata** | Integer | 5000 | Maximal number of collected data.
 
 
@@ -435,7 +427,6 @@ In `PARAM`, you can specialize the task as you expect.
             "numb_test": 4,
             "save_freq": 1000,
             "save_ckpt": "model.ckpt",
-            "load_ckpt": "model.ckpt",
             "disp_training": true,
             "time_training": true,
             "profiling": false,
@@ -532,13 +523,13 @@ The bold notation of key (such aas **type_map**) means that it's a necessary key
 | **model_devi_clean_traj**  | Boolean or Int | true                                                         | If type of model_devi_clean_traj is boolean type then it denote whether to clean traj folders in MD since they are too large. If it is Int type, then the most recent n iterations of traj folders will be retained, others will be removed. |
 | **model_devi_nopbc**  | Boolean | False                                                         | Assume open boundary condition in MD simulations. |
 | model_devi_activation_func | List of list of string | [["tanh","tanh"],["tanh","gelu"],["gelu","tanh"],["gelu","gelu"]]	| Set activation functions for models, length of the List should be the same as `numb_models`, and two elements in the list of string respectively assign activation functions to the embedding and fitting nets within each model. *Backward compatibility*: the orginal "List of String" format is still supported, where embedding and fitting nets of one model use the same activation function, and the length of the List should be the same as `numb_models`|
-| **model_devi_jobs**        | [<br/>{<br/>"sys_idx": [0], <br/>"temps": <br/>[100],<br/>"press":<br/>[1],<br/>"trj_freq":<br/>10,<br/>"nsteps":<br/> 1000,<br/> "ensembles": <br/> "nvt" <br />},<br />...<br />] | List of dict | Settings for exploration in `01.model_devi`. Each dict in the list corresponds to one iteration. The index of `model_devi_jobs` exactly accord with index of iterations |
+| **model_devi_jobs**        | [<br/>{<br/>"sys_idx": [0], <br/>"temps": <br/>[100],<br/>"press":<br/>[1],<br/>"trj_freq":<br/>10,<br/>"nsteps":<br/> 1000,<br/> "ensemble": <br/> "nvt" <br />},<br />...<br />] | List of dict | Settings for exploration in `01.model_devi`. Each dict in the list corresponds to one iteration. The index of `model_devi_jobs` exactly accord with index of iterations |
 | **model_devi_jobs["sys_idx"]**    | List of integer           | [0]                                                          | Systems to be selected as the initial structure of MD and be explored. The index corresponds exactly to the `sys_configs`. |
 | **model_devi_jobs["temps"]**  | List of integer | [50, 300] | Temperature (**K**) in MD
 | **model_devi_jobs["press"]**  | List of integer | [1,10] | Pressure (**Bar**) in MD
 | **model_devi_jobs["trj_freq"]**   | Integer  | 10                                                            | Frequecy of trajectory saved in MD.                   |
 | **model_devi_jobs["nsteps"]**     | Integer      | 3000                                                         | Running steps of MD.                                  |
-| **model_devi_jobs["ensembles"]** | String             | "nvt"                                    | Determining which ensemble used in MD, **options** include “npt” and “nvt”. |
+| **model_devi_jobs["ensemble"]** | String             | "nvt"                                    | Determining which ensemble used in MD, **options** include “npt” and “nvt”. |
 | model_devi_jobs["neidelay"] | Integer             | "10"                                    | delay building until this many steps since last build |
 | model_devi_jobs["taut"] | Float          | "0.1"                                    | Coupling time of thermostat (ps) |
 | model_devi_jobs["taup"] | Float             | "0.5"                                    | Coupling time of barostat (ps) |
@@ -554,7 +545,7 @@ The bold notation of key (such aas **type_map**) means that it's a necessary key
 | **fp_pp_path**   | String           | "/sharedext4/.../ch4/"                                       | Directory of psuedo-potential file to be used for 02.fp exists. |
 | **fp_pp_files**    | List of string         | ["POTCAR"]                                                   | Psuedo-potential file to be used for 02.fp. Note that the order of elements should correspond to the order in `type_map`. |
 |**fp_incar** | String | "/sharedext4/../ch4/INCAR" | Input file for VASP. INCAR must specify KSPACING and KGAMMA.
-|**fp_aniso_kspacing** | List of integer | [1.0,1.0,1.0] | Set anisotropic kspacing. Usually useful for 1-D or 2-D materials. Only support VASP. If it is setting the KSPACING key in INCAR will be ignored.
+|**fp_aniso_kspacing** | List of float | [1.0,1.0,1.0] | Set anisotropic kspacing. Usually useful for 1-D or 2-D materials. Only support VASP. If it is setting the KSPACING key in INCAR will be ignored.
 |cvasp| Boolean | true | If `cvasp` is true, DP-GEN will use Custodian to help control VASP calculation.
 | *fp_style == Gaussian*
 | **use_clusters** | Boolean | false | If set to `true`, clusters will be taken instead of the whole system. This option does not work with DeePMD-kit 0.x.
@@ -576,7 +567,10 @@ The bold notation of key (such aas **type_map**) means that it's a necessary key
 | **user_fp_params** | Dict |  |Parameters for cp2k calculation. find detail in manual.cp2k.org. only the kind section must be set before use.  we assume that you have basic knowledge for cp2k input.
 | **external_input_path** | String |  | Conflict with key:user_fp_params, use the template input provided by user, some rules should be followed, read the following text in detail.
 | *fp_style == ABACUS*
-| **user_fp_params** | Dict |  |Parameters for ABACUS INPUT. find detail [Here](https://github.com/deepmodeling/abacus-develop/blob/develop/docs/input-main.md#out-descriptor). If `deepks_model` is set, the model file should be in the pseudopotential directory. You can also set `KPT` file by adding `k_points` that corresponds to a list of six integers in this dictionary.
+| **user_fp_params** | Dict |  |Parameters for ABACUS INPUT. find detail [Here](https://github.com/deepmodeling/abacus-develop/blob/develop/docs/input-main.md#out-descriptor). If `deepks_model` is set, the model file should be in the pseudopotential directory. You can also set `KPT` file by adding `k_points` that corresponds to a list of six integers in this dictionary. Any key beginning with "_" will be ignored.
+| **fp_incar** | String | "./abacus/INPUT" | INPUT file for ABACUS. This is another way of providing input parameters. Users must choose one of these two ways. Any keywords beginning with "_" will be ignored
+| **k_points** | List of integers | [2,2,2,0,0,0] | Monkhorst-Pack k-grids setting for generating KPT file of ABACUS
+| **fp_kpt_file** | String | "./abacus/KPT" | KPT file for ABACUS. This is another way to provide KPT file for ABACUS and has lower priority than the above `k_points` key. They two have lower priority than kspacing (in unit of 1/Bohr) and gamma_only in INPUT file of ABACUS.
 | **fp_orb_files** | List |  |List of atomic orbital files. The files should be in pseudopotential directory. 
 | **fp_dpks_descriptor** | String |  |DeePKS descriptor file name. The file should be in pseudopotential directory. 
 
@@ -597,15 +591,15 @@ The bold notation of key (such as **calypso_path**) means that it's a necessary 
 | **model_devi_jobs["NameOfAtoms"]** | List of string |["Al","Cu"] | Parameter of CALYPSO input file, means the element species of structures to be generated. |
 | **model_devi_jobs["NumberOfAtoms"]** | List of int |[1,10] | Parameter of CALYPSO input file, means the number of atoms for each chemical species in one formula unit. |
 | **model_devi_jobs["NumberOfFormula"]** | List of int |[1,2] | Parameter of CALYPSO input file, means the range of formula unit per cell. |
-| **model_devi_jobs["Volume"]** | List of int |[300] | Parameter of CALYPSO input file, means the colume per formula unit(angstrom^3). |
+| **model_devi_jobs["Volume"]** | int | 300 | Parameter of CALYPSO input file, means the colume per formula unit(angstrom^3). |
 | **model_devi_jobs["DistanceOfIon"]** | List of float |[[ 1.48,1.44],[ 1.44,1.41]] | Parameter of CALYPSO input file, means minimal distance between atoms of each chemical species. Unit is in angstrom. |
-| **model_devi_jobs["PsoRatio"]** | List of float |[0.6] | Parameter of CALYPSO input file, means the proportion of the structures generated by PSO. |
-| **model_devi_jobs["PopSize"]** | List of int |[5] | Parameter of CALYPSO input file, means the number of structures to be generated in one step in CALYPSO. |
-| **model_devi_jobs["MaxStep"]** | List of int |[3] | Parameter of CALYPSO input file, means the number of max step in CALYPSO.|
-| **model_devi_jobs["ICode"]** | List of int |[13] | Parameter of CALYPSO input file, means the chosen of local optimization, 1 is vasp and 13 is ASE with dp.  |
+| **model_devi_jobs["PsoRatio"]** | float or int | 0.6 | Parameter of CALYPSO input file, means the proportion of the structures generated by PSO. |
+| **model_devi_jobs["PopSize"]** | int | 5 | Parameter of CALYPSO input file, means the number of structures to be generated in one step in CALYPSO. |
+| **model_devi_jobs["MaxStep"]** | int | 3 | Parameter of CALYPSO input file, means the number of max step in CALYPSO.|
+| **model_devi_jobs["ICode"]** | int | 13 | Parameter of CALYPSO input file, means the chosen of local optimization, 1 is vasp and 13 is ASE with dp.  |
 | **model_devi_jobs["Split"]** | String |"T" | Parameter of CALYPSO input file, means that generating structures and optimizing structures are split into two parts, in dpgen workflow, Split must be T. |
-| **model_devi_jobs["PSTRESS"]** | List of float |[0.001] | Same as PSTRESS in INCAR. |
-| **model_devi_jobs["fmax"]** | List of float |[0.01] | The convergence criterion is that the force on all individual atoms should be less than *fmax*. |
+| **model_devi_jobs["PSTRESS"]** | List of float or int |[0.001] | Same as PSTRESS in INCAR. |
+| **model_devi_jobs["fmax"]** | float | 0.01 | The convergence criterion is that the force on all individual atoms should be less than *fmax*. |
 | *in machine file*
 | **model_devi["deepmdkit_python"]** | String | "/home/zhenyu/soft/deepmd-kit/bin/python" | A python path with deepmd package. |
 | **model_devi["calypso_path"]** | string | "/home/zhenyu/workplace/debug" | The absolute path of calypso.x.|
@@ -695,1571 +689,424 @@ the following essential section should be provided in user template
 ```
 
 ## Test: Auto-test for Deep Generator
+###  configure and param.json
+At this step, we assume that you have prepared some graph files like `graph.*.pb` and the particular pseudopotential `POTCAR`.
 
-### Guidelines
-
-#### I. Auto test
-
-Suppose that we have a potential (can be DFT, DP, MEAM ...), `autotest` helps us automatically calculate M porperties on N configurations. The folder where the `autotest` runs is called the `autotest`'s working directory. Different potentials should be tested in different working directories.
-
-A property is tested in three stages: `make`, `run` and `post`. `make` prepare all computational tasks that are needed to calculate the property. For example to calculate EOS, `autotest` prepare a series of tasks, each of which has a scaled configuration with certain volume, and all necessary input files necessary for starting a VAPS or LAMMPS relaxation. `run` sends all the computational tasks to remote computational resources defined in a machine configuration file like `machine.json`, and automatically collect the results when remote calculations finish. `post` calculates the desired property from the collected results.
-
-##### 1. Relaxation
-
-The relaxation of a structure should be carried out before calculating all other properties:
-```bash
-dpgen autotest make equi.json 
-dpgen autotest run relax.json machine.json
-dpgen autotest post equi.json 
+The main code of this step is
 ```
-If, for some reason, the main program terminated at stage `run`, one can easily restart with the same command.
-`relax.json` is the parameter file. An example for `deepmd` relaxation is given as:
+dpgen test PARAM MACHINE
+```
+where `PARAM` and `MACHINE` are both json files. `MACHINE` is the same as above.
+
+The whole program contains a series of tasks shown as follows. In each task, there are three stages of work, generate, run and compute.
++ `00.equi`:(default task) the equilibrium state
+
++ `01.eos`: the equation of state
+
++ `02.elastic`: the elasticity like Young's module
+
++ `03.vacancy`: the vacancy formation energy
+
++ `04.interstitial`: the interstitial formation energy
+
++ `05.surf`: the surface formation energy
+
+Dpgen auto_test will auto make dir for each task it tests, the dir name is the same as the dir name. And the test results will in a plain text file named result. For example `cat ./01.eos/Al/std-fcc/deepmd/result`
+
+
+We take Al as an example to show the parameter settings of `param.json`.
+The first part is the fundamental setting for particular alloy system.
 ```json
-{
-	"structures":	"confs/mp-*",
-	"interaction": {
-		"type":		"deepmd",
-		"model":	"frozen_model.pb",
-                "type_map":     {"Al": 0, "Mg": 1}
-	},
-	"relaxation": {
-	}
-}
-```
-
-where the key `structures` provides the structures to relax. `interaction` is provided with `deepmd`, and other options are `vasp`, `eam`, `meam`...
-
-Yuzhi:
-
-1. We should notice that the `interaction` here should always be considered as a unified abstract class, which means that we should avoid repeating identifing which interaction we're using in the main code.
-2. The structures here should always considered as a list, and the wildcard should be supported by using `glob`. Before all calculations , there is a stage where we generate the configurations.
-
-The outputs of the relaxation are stored in the `mp-*/00.relaxation` directory.
-```bash
-ls mp-*
-mp-1/relaxation  mp-2/relaxation  mp-3/relaxation
-```
-
-##### 2. Other properties
-
-Other properties can be computed in parallel:
-```bash
-dpgen autotest make properties.json 
-dpgen autotest run properties.json machine.json
-dpgen autotest post properties.json 
-```
-where an example of `properties.json` is given by
-```json
-{
-	"structures":	"confs/mp-*",
-	"interaction": {
-		"type":		"vasp",
-		"incar":	"vasp_input/INCAR",
-		"potcar_prefix":"vasp_input",
-		"potcars":	{"Al": "POTCAR.al", "Mg": "POTCAR.mg"}
-	},
-	"properties": [
-		{
-                        "type":         "eos",
-			"vol_start":	10,
-			"vol_end":	30,
-			"vol_step":	0.5
-		},
-		{
-                        "type":         "elastic",
-			"norm_deform":	2e-2,
-			"shear_deform": 5e-2
-		}
-        ]
-}
-```
-
-
-The `dpgen` packed all `eos` and `elastic` task and sends them to corresponding computational resources defined in `machine.json`. The outputs of a property, taking `eos` for example, are stored in
-```bash
-ls mp-*/ | grep eos
-mp-1/eos_00  mp-2/eos_00  mp-3/eos_00
-```
-where `00` are suffix of the task.
-
-##### 3. Refine the calculation of a property
-
-Some times we want to refine the calculation of a property from previous results. For example, when higher convergence criteria `EDIFF` and `EDIFFG` are necessary, and the new VASP calculation is desired to start from the previous output configration, rather than starting from scratch. 
-```bash
-dpgen autotest make refine.json 
-dpgen autotest run refine.json machine.json
-```
-with `refine.json`
-```json
-{
-	"properties": {
-		"eos" : {
-			"init_from_suffix":	"00",
-                        "output_suffix":        "01",
-			"vol_start":	10,
-			"vol_end":	30,
-			"vol_step":	0.5
-		}
-	}	
-}
-```
-
-
-
-##### 4. Configuration filter
-
-Some times the configurations automatically generated are problematic. For example, the distance between the interstitial atom and the lattic is too small, then these configurations should be filtered out. One can set filters of configurations by
-```json
-{
-	"properties": {
-		"intersitital" : {
-			"supercell":	[3,3,3],
-			"insert_atom":	["Al"],
-			"conf_filters": [
-				{  "min_dist": 2 }
-			] 
-		}
-	}	
-}
-```
-
-#### II. Auto test: to do list
-
-For the implementation, one should do :
-1. Clearly know the input/output of the function/class. How to handle exceptions.
-2. Finish coding
-3. Provide Unittest
-4. Provide Document: what does the user provide in each section of the parameter file (json format)
-
-common.py
-- make_*
-- run_*
-- post_*
-
-Property
-- EOS
-- Elastic
-- Vacancy
-- Interstitial
-- Surface
-
-
-
-Task:
-- VASP
-- DEEPMD_LMP
-- MEAM_LMP
-
-
-Specific functions:
-1. Property.make_confs : Make configurations needed to compute the property. 
-        The tasks directory will be named as path_to_work/task.xxxxxx
-        IMPORTANT: handel the case when the directory exists.
-2. Property.cmpt :  Compute the property. 
-3. Task.make_input_file(Property.task_type): Prepare input files for a computational task.
-        For example, the VASP prepares INCAR.
-        LAMMPS (including DeePMD, MEAM...) prepares in.lammps.
-        The parameter of this task will be stored in 'output_dir/task.json'
-
-### Main components
-
-#### I. Task type
-
-There are now six task types implemented in the package: `vasp`, `abacus`, `deepmd`, `meam`, `eam_fs`, and `eam_alloy`. An `inter.json` file in json format containing the interaction parameters will be written in the directory of each task. The input examples of the `"interaction"` part of each type can be found below:
-
-##### 1. VASP: 
-    
-The default of `potcar_prefix` is "".
-```json
-	"interaction": {
-		"type":		"vasp",
-		"incar":	"vasp_input/INCAR",
-		"potcar_prefix":"vasp_input",
-		"potcars":	{"Al": "POTCAR.al", "Mg": "POTCAR.mg"}
-	}
-```
-##### 2. ABACUS: 
-    
-The default of `potcar_prefix` is "". The path of potcars/orb_files/deepks_desc is `potcar_prefix` + `potcars`/`orb_files`/`deepks_desc`.
-```json
-	"interaction": {
-		"type":		"abacus",
-		"incar":	"abacus_input/INPUT",
-		"potcar_prefix":"abacus_input",
-		"potcars":	{"Al": "pseudo_potential.al", "Mg": "pseudo_potential.mg"},
-		"orb_files": {"Al": "numerical_orb.al", "Mg": "numerical_orb.mg"},
-		"atom_masses": {"Al": 26.9815, "Mg":24.305},
-		"deepks_desc": "jle.orb"
-	}
-```
-##### 3. deepmd:
-
-**Only 1** model can be used in autotest in one working directory and the default `"deepmd_version"` is **1.2.0**.
-
-```json
-	"interaction": {
-		"type":		 "deepmd",
-		"model":	 "frozen_model.pb", 
-		"type_map":      {"Al": 0, "Mg": 1},
-                "deepmd_version":"1.2.0"
-	}
-```
-##### 4. meam:
-Please make sure the [USER-MEAMC package](https://lammps.sandia.gov/doc/Packages_details.html#pkg-user-meamc) has already been installed in LAMMPS.
-```json
-	"interaction": {
-		"type":		 "meam",
-		"model":	 ["meam.lib","AlMg.meam"],
-		"type_map":      {"Al": 1, "Mg": 2}
-	}
-```
-##### 5. eam_fs & eam_alloy:
-Please make sure the [MANYBODY package](https://lammps.sandia.gov/doc/Packages_details.html#pkg-manybody) has already been installed in LAMMPS
-```json
-	"interaction": {
-		"type":		 "eam_fs (eam_alloy)", 
-		"model":	 "AlMg.eam.fs (AlMg.eam.alloy)", 
-		"type_map":      {"Al": 1, "Mg": 2}
-	}
-```
- 
-
-#### II. Property type
-
-Now the supported property types are `eos`, `elastic`, `vacancy`, `interstitial`, and `surface`. Before property tests, `relaxation` should be done first or the relaxation results should be present in the corresponding directory `confs/mp-*/relaxation/relax_task`. A file named `task.json` in json format containing the property parameter will be written in the directory of each task. Multiple property tests can be performed simultaneously and are written in the `"properties"` part of the input file. An example of `EOS` and `Elastic` tests can be given as follows (please refer to [Property](https://github.com/deepmodeling/dpgen/wiki/Property:-get-started-and-input-examples) for further information of the property parameters):
-```json
-"properties": [
-		{
-                        "type":         "eos",
-			"vol_start":    0.8,
-			"vol_end":	1.2,
-			"vol_step":	0.01
-		},
-		{
-                        "type":         "elastic",
-			"norm_deform":	2e-2,
-			"shear_deform": 5e-2
-		}
-        ]
-```
-
-#### III. Make, run, and post
-
-There are three operations in auto test package, namely `make`, `run`, and `post`. Here we take `eos` property as an example for property type.
-
-##### 1. Make
-The `INCAR`, `POSCAR`, `POTCAR` input files for VASP or `in.lammps`, `conf.lmp`, and the interatomic potential files for LAMMPS will be generated in the directory `confs/mp-*/relaxation/relax_task` for relaxation or `confs/mp-*/eos_00/task.[0-9]*[0-9]` for EOS. The `machine.json` file is not needed for `make`. Example: 
-```bash
-dpgen autotest make relaxation.json 
-```
-
-##### 2. Run
-The jobs would be dispatched according to the parameter in `machine.json` file and the calculation results would be sent back. Example:
-```bash
-dpgen autotest run relaxation.json machine.json
-```
-
-##### 3. Post
-The post process of calculation results would be performed. `result.json` in json format will be generated in `confs/mp-*/relaxation/relax_task` for relaxation and `result.json` in json format and `result.out` in txt format in `confs/mp-*/eos_00` for EOS. The `machine.json` file is also not needed for `post`. Example:
-```bash
-dpgen autotest post relaxation.json 
-```
-
-### Structure relaxation
-
-#### I. Relaxation: get started and input examples
-
-All the property tests should be based on the equilibrium state calculated either by `VASP` or `LAMMPS`. The structure after relaxation is supposed to exist as the file like `confs/mp-*/relaxation/relax_task/CONTCAR` and the further property tests would normally start from this configuration.
-
-##### 1. An input example of the input file for relaxation by VASP:
-
-```json
-{
-    "structures":            ["confs/std-*"],
-    "interaction": {
-            "type":           "vasp",
-            "incar":          "vasp_input/INCAR",
-            "potcar_prefix":  "vasp_input",
-            "potcars":       {"Al": "POTCAR.al"}
-	},
-    "relaxation": {
-            "cal_type":       "relaxation",
-            "cal_setting":   {"relax_pos":       true,
-                              "relax_shape":     true,
-                              "relax_vol":       true,
-                              "ediff":           1e-6,
-                              "ediffg":         -0.01,
-                              "encut":           650,
-                              "kspacing":        0.1,
-                              "kgamma":          false}
-	}
-}
-```
-For VASP relaxation and all the property calculations, **the initial INCAR file must be given by user** and the package would change the `ISIF` and `NSW` parameter according to the property type. Besides, users can also set the `cal_setting` dictionary in the `relaxation` part to make the final changes on INCAR.
-
-Key words | data structure | example | description
----|---|---|---
-**structures** | List of String | ["confs/std-*"] | path of different structures
-**interaction** | Dict | See above | description of the task type and atomic interaction
-**type** | String | "vasp" | task type
-**incar** | String | "vasp_input/INCAR" | the path for INCAR file in vasp
-potcar_prefix | String | "vasp_input" | the prefix of path for POTCAR file in vasp, default = ""
-**potcars** | Dict | {"Al": "POTCAR.al"} | key is element type and value is potcar name
-**relaxation** | Dict | See above | the calculation type and setting for relaxation
-cal_type  | String | "relaxation" or "static" | calculation type
-cal_setting | Dict | See above | calculation setting
-relax_pos | Boolean | true | relax atomic position or not, default = true for relaxation
-relax_shape | Boolean | true | relax box shape or not, default = true for relaxation
-relax_vol | Boolean | true | relax box volume or not, default = true for relaxation
-ediff | Float | 1e-6 | set `EDIFF` parameter in INCAR files
-ediffg | Float | -0.01 | set `EDIFFG` parameter in INCAR files
-encut | Int | 650 | set `encut` parameter in INCAR files
-kspacing | Float | 0.1 | set `KSPACING` parameter in INCAR files
-kgamma | Boolean | false | set `KGAMMA` parameter in INCAR files
-
-##### 2. An input example of the input file for relaxation by LAMMPS:
-
-```json
-{
-    "structures":         ["confs/std-*"],
-    "interaction": {
-            "type":        "deepmd",
-            "model":       "frozen_model.pb",
-            "in_lammps":   "lammps_input/in.lammps",
-            "type_map":   {"Al": 0}
-	},
-    "relaxation": {
-            "cal_setting":{"etol": 1e-12,
-                           "ftol": 1e-6,
-                           "maxiter": 5000,
-                           "maximal": 500000}
-	}
-}
-```
-**Other key words different from vasp:**
-
-Key words | data structure | example | description
----|---|---|---
-**model** | String or List of String | "frozen_model.pb" | model file for atomic interaction
-in_lammps | String | "lammps_input/in.lammps" | input file for lammps commands
-**type_map** | Dict | {"Al": 0} | key is element type and value is type number. DP starts from 0, others starts from 1
-etol | Float | 1e-12 | stopping tolerance for energy
-ftol | Float | 1e-6 | stopping tolerance for force
-maxiter | Int | 5000 | max iterations of minimizer
-maxeval | Int | 500000 | max number of force/energy evaluations
-
-#### II. Relaxation: make
-
-For LAMMPS relaxation and all the property calculations, **package will help to generate `in.lammps` file for user automatically** according to the property type. We can also make the final changes in the `minimize` setting (`minimize etol ftol maxiter maxeval`) in `in.lammps`. In addition, users can apply the input file for lammps commands in the `interaction` part. For further information of the LAMMPS relaxation, we refer users to [minimize command](https://lammps.sandia.gov/doc/minimize.html).
-
-The list of the directories storing structures are `["confs/std-*"]` in the previous example. For single element system, if `POSCAR` doesn't exist in the directories: `std-fcc`, `std-hcp`, `std-dhcp`, `std-bcc`, `std-diamond`, and `std-sc`, the package will automatically generate the standard crystal structures **`fcc`**, **`hcp`**, **`dhcp`**, **`bcc`**, **`diamond`**, and **`sc`** in the corresponding directories, respectively. In other conditions and for multi-component system (more than 1), if `POSCAR` doesn't exist, the package will terminate and print the error **"no configuration for autotest"**.
-
-##### 1. VASP relaxation
-Take the input example of Al in the previous section, when we do `make` as follows:
-```bash
-dpgen autotest make relaxation.json
-```
-the following files would be generated:
-```bash
-tree confs/std-fcc/relaxation/
-```
-
-```
-confs/std-fcc/relaxation/
-|-- INCAR
-|-- POTCAR
-`-- relax_task
-    |-- INCAR -> ../INCAR
-    |-- inter.json
-    |-- KPOINTS
-    |-- POSCAR -> ../../POSCAR
-    |-- POTCAR -> ../POTCAR
-    `-- task.json
-```
-`inter.json` records the information in the `interaction` dictionary and `task.json` records the information in the `relaxation` dictionary.
-
-##### 2. LAMMPS relaxation
-```bash
-dpgen autotest make relaxation.json
-tree confs/std-fcc/
-```
-the output would be:
-```
-confs/std-fcc/
-|-- POSCAR
-`-- relaxation
-    |-- frozen_model.pb -> ../../../frozen_model.pb
-    |-- in.lammps
-    `-- relax_task
-        |-- conf.lmp
-        |-- frozen_model.pb -> ../frozen_model.pb
-        |-- in.lammps -> ../in.lammps
-        |-- inter.json
-        |-- POSCAR -> ../../POSCAR
-        `-- task.json
-```
-the `conf.lmp` is the input configuration and `in.lammps` is the input command file for lammps.
-
-**in.lammps**: the package would generate the file `confs/mp-*/relaxation/in.lammps` as follows and we refer the user to the further information of [fix box/relax](https://lammps.sandia.gov/doc/fix_box_relax.html) function in lammps:
-
-```txt
-clear
-units 	          metal
-dimension	  3
-boundary	  p p p
-atom_style	  atomic
-box               tilt large
-read_data         conf.lmp
-mass              1 26.982
-neigh_modify      every 1 delay 0 check no
-pair_style deepmd frozen_model.pb
-pair_coeff
-compute           mype all pe
-thermo            100
-thermo_style      custom step pe pxx pyy pzz pxy pxz pyz lx ly lz vol c_mype
-dump              1 all custom 100 dump.relax id type xs ys zs fx fy fz
-min_style         cg
-fix               1 all box/relax iso 0.0
-minimize          1.000000e-12 1.000000e-06 5000 500000
-fix               1 all box/relax aniso 0.0
-minimize          1.000000e-12 1.000000e-06 5000 500000
-variable          N equal count(all)
-variable          V equal vol
-variable          E equal "c_mype"
-variable          tmplx equal lx
-variable          tmply equal ly
-variable          Pxx equal pxx
-variable          Pyy equal pyy
-variable          Pzz equal pzz
-variable          Pxy equal pxy
-variable          Pxz equal pxz
-variable          Pyz equal pyz
-variable          Epa equal ${E}/${N}
-variable          Vpa equal ${V}/${N}
-variable          AA equal (${tmplx}*${tmply})
-print "All done"
-print "Total number of atoms = ${N}"
-print "Final energy per atoms = ${Epa}"
-print "Final volume per atoms = ${Vpa}"
-print "Final Base area = ${AA}"
-print "Final Stress (xx yy zz xy xz yz) = ${Pxx} ${Pyy} ${Pzz} ${Pxy} ${Pxz} ${Pyz}"
-```
-
-If user provides lammps input command file `in.lammps`, the `thermo_style` and `dump` commands should be the same as the above file.
-
-**interatomic potential model**: the `frozen_model.pb` in `confs/mp-*/relaxation` would link to the `frozen_model.pb` file given in the input.
-
-#### III. Relaxation: run
-
-The work path of each task should be in the form like `confs/mp-*/relaxation` and all task is in the form like `confs/mp-*/relaxation/relax_task`. 
-
-The `machine.json` file should be applied in this process and the machine parameters (eg. GPU or CPU) are determined according to the task type (VASP or LAMMPS). Then in each work path, the corresponding tasks would be submitted and the results would be sent back through [make_dispatcher](https://github.com/deepmodeling/dpgen/blob/devel/dpgen/dispatcher/Dispatcher.py).
-
-Take `deepmd` run for example:
-```bash
-nohup dpgen autotest run relaxation.json machine-ali.json > run.result 2>&1 &
-tree confs/std-fcc/relaxation/
-```
-
-the output would be:
-```
-confs/std-fcc/relaxation/
-|-- frozen_model.pb -> ../../../frozen_model.pb
-|-- in.lammps
-|-- jr.json
-`-- relax_task
-    |-- conf.lmp
-    |-- dump.relax
-    |-- frozen_model.pb -> ../frozen_model.pb
-    |-- in.lammps -> ../in.lammps
-    |-- inter.json
-    |-- log.lammps
-    |-- outlog
-    |-- POSCAR -> ../../POSCAR
-    `-- task.json
-```
-`dump.relax` is the file storing configurations and `log.lammps` is the output file for lammps.
-
-#### IV. Relaxation: post
-
-Take `deepmd` post for example:
-```bash
-dpgen autotest post relaxation.json
-tree confs/std-fcc/relaxation/
-```
-the output will be:
-```
-confs/std-fcc/relaxation/
-|-- frozen_model.pb -> ../../../frozen_model.pb
-|-- in.lammps
-|-- jr.json
-`-- relax_task
-    |-- conf.lmp
-    |-- CONTCAR
-    |-- dump.relax
-    |-- frozen_model.pb -> ../frozen_model.pb
-    |-- in.lammps -> ../in.lammps
-    |-- inter.json
-    |-- log.lammps
-    |-- outlog
-    |-- POSCAR -> ../../POSCAR
-    |-- result.json
-    `-- task.json
-```
-`result.json` stores the box cell, coordinates, energy, force, virial,... information of each frame in the relaxation trajectory and `CONTCAR` is the final equilibrium configuration.
-
-`result.json`:
-
-```json
-{
-    "@module": "dpdata.system",
-    "@class": "LabeledSystem",
-    "data": {
-        "atom_numbs": [
-            1
-        ],
-        "atom_names": [
-            "Al"
-        ],
-        "atom_types": {
-            "@module": "numpy",
-            "@class": "array",
-            "dtype": "int64",
-            "data": [
-                0
-            ]
-        },
-        "orig": {
-            "@module": "numpy",
-            "@class": "array",
-            "dtype": "int64",
-            "data": [
-                0,
-                0,
-                0
-            ]
-        },
-        "cells": {
-            "@module": "numpy",
-            "@class": "array",
-            "dtype": "float64",
-            "data": [
-                [
-                    [
-                        2.8637824638,
-                        0.0,
-                        0.0
-                    ],
-                    [
-                        1.4318912319,
-                        2.4801083646,
-                        0.0
-                    ],
-                    [
-                        1.4318912319,
-                        0.8267027882,
-                        2.3382685902
-                    ]
-                ],
-                [
-                    [
-                        2.8549207998018438,
-                        0.0,
-                        0.0
-                    ],
-                    [
-                        1.4274603999009239,
-                        2.472433938457684,
-                        0.0
-                    ],
-                    [
-                        1.4274603999009212,
-                        0.8241446461525599,
-                        2.331033071844216
-                    ]
-                ],
-                [
-                    [
-                        2.854920788303194,
-                        0.0,
-                        0.0
-                    ],
-                    [
-                        1.427460394144466,
-                        2.472433928487206,
-                        0.0
-                    ],
-                    [
-                        1.427460394154763,
-                        0.8241446428350139,
-                        2.331033062460779
-                    ]
-                ]
-            ]
-        },
-        "coords": {
-            "@module": "numpy",
-            "@class": "array",
-            "dtype": "float64",
-            "data": [
-                [
-                    [
-                        0.0,
-                        0.0,
-                        0.0
-                    ]
-                ],
-                [
-                    [
-                        5.709841595683707e-25,
-                        -4.3367974740910857e-19,
-                        0.0
-                    ]
-                ],
-                [
-                    [
-                        -8.673606219968035e-19,
-                        8.673619637565944e-19,
-                        8.673610853102186e-19
-                    ]
-                ]
-            ]
-        },
-        "energies": {
-            "@module": "numpy",
-            "@class": "array",
-            "dtype": "float64",
-            "data": [
-                -3.745029,
-                -3.7453815,
-                -3.7453815
-            ]
-        },
-        "forces": {
-            "@module": "numpy",
-            "@class": "array",
-            "dtype": "float64",
-            "data": [
-                [
-                    [
-                        0.0,
-                        -6.93889e-18,
-                        -3.46945e-18
-                    ]
-                ],
-                [
-                    [
-                        1.38778e-17,
-                        6.93889e-18,
-                        -1.73472e-17
-                    ]
-                ],
-                [
-                    [
-                        1.38778e-17,
-                        1.73472e-17,
-                        -4.51028e-17
-                    ]
-                ]
-            ]
-        },
-        "virials": {
-            "@module": "numpy",
-            "@class": "array",
-            "dtype": "float64",
-            "data": [
-                [
-                    [
-                        -0.07534992071654338,
-                        1.2156615579052586e-17,
-                        1.3904892126132796e-17
-                    ],
-                    [
-                        1.2156615579052586e-17,
-                        -0.07534992071654338,
-                        4.61571024026576e-12
-                    ],
-                    [
-                        1.3904892126132796e-17,
-                        4.61571024026576e-12,
-                        -0.07534992071654338
-                    ]
-                ],
-                [
-                    [
-                        -9.978994290457664e-08,
-                        -3.396452753975288e-15,
-                        8.785831629151552e-16
-                    ],
-                    [
-                        -3.396452753975288e-15,
-                        -9.991375413666671e-08,
-                        5.4790751628409565e-12
-                    ],
-                    [
-                        8.785831629151552e-16,
-                        5.4790751628409565e-12,
-                        -9.973497959053003e-08
-                    ]
-                ],
-                [
-                    [
-                        1.506940521266962e-11,
-                        1.1152016233536118e-11,
-                        -8.231900529157644e-12
-                    ],
-                    [
-                        1.1152016233536118e-11,
-                        -6.517665029355618e-11,
-                        -6.33706710415926e-12
-                    ],
-                    [
-                        -8.231900529157644e-12,
-                        -6.33706710415926e-12,
-                        5.0011471096530724e-11
-                    ]
-                ]
-            ]
-        },
-        "stress": {
-            "@module": "numpy",
-            "@class": "array",
-            "dtype": "float64",
-            "data": [
-                [
-                    [
-                        -7.2692250000000005,
-                        1.1727839e-15,
-                        1.3414452e-15
-                    ],
-                    [
-                        1.1727839e-15,
-                        -7.2692250000000005,
-                        4.4529093000000003e-10
-                    ],
-                    [
-                        1.3414452e-15,
-                        4.4529093000000003e-10,
-                        -7.2692250000000005
-                    ]
-                ],
-                [
-                    [
-                        -9.71695e-06,
-                        -3.3072633e-13,
-                        8.5551193e-14
-                    ],
-                    [
-                        -3.3072633e-13,
-                        -9.729006000000001e-06,
-                        5.3351969e-10
-                    ],
-                    [
-                        8.5551193e-14,
-                        5.3351969e-10,
-                        -9.711598e-06
-                    ]
-                ],
-                [
-                    [
-                        1.4673689e-09,
-                        1.0859169e-09,
-                        -8.0157343e-10
-                    ],
-                    [
-                        1.0859169e-09,
-                        -6.3465139e-09,
-                        -6.1706584e-10
-                    ],
-                    [
-                        -8.0157343e-10,
-                        -6.1706584e-10,
-                        4.8698191e-09
-                    ]
-                ]
-            ]
-        }
-    }
-}
-```
-
-### Property
-
-#### I. Property: get started and input examples
-
-Here we take deepmd for example and the input file for other task types is similar.
-
-```json
-{
-    "structures":       ["confs/std-*"],
-    "interaction": {
-        "type":          "deepmd",
-        "model":         "frozen_model.pb",
-        "deepmd_version":"1.2.0",
-        "type_map":     {"Al": 0}
+    "_comment": "models",
+    "potcar_map" : {
+	"Al" : "/somewhere/POTCAR"
     },
-    "properties": [
-        {
-         "type":         "eos",
-         "vol_start":    0.9,
-         "vol_end":      1.1,
-         "vol_step":     0.01
-        },
-        {
-         "type":         "elastic",
-         "norm_deform":  2e-2,
-         "shear_deform": 5e-2
-        },
-        {
-         "type":             "vacancy",
-         "supercell":        [3, 3, 3],
-         "start_confs_path": "../vasp/confs"
-        },
-        {
-         "type":         "interstitial",
-         "supercell":   [3, 3, 3],
-         "insert_ele":  ["Al"],
-         "conf_filters":{"min_dist": 1.5},
-         "cal_setting": {"input_prop": "lammps_input/lammps_high"}
-        },
-        {
-         "type":           "surface",
-         "min_slab_size":  10,
-         "min_vacuum_size":11,
-         "max_miller":     2,
-         "cal_type":       "static"
-        }
-        ]
-}
-```
-Universal key words for properties
-
-Key words | data structure | example | description
----|---|---|---
-**type** | String | "eos" | specifying the property type
-skip | Boolean | true | whether to skip current property or not
-start_confs_path | String | "../vasp/confs" | starting from the equilibrium configuration in other path only for the current property type
-cal_setting["input_prop"] | String | "lammps_input/lammps_high" |input commands file for lammps
-cal_setting["overwrite_interaction"] | Dict | | overwrite the interaction in the `interaction` part only for the current property type
-
-other parameters in `cal_setting` and `cal_type` in `relaxation` also apply in `property`.
-
-Key words for **EOS**
-
-Key words | data structure | example | description
----|---|---|---
-**vol_start** | Float | 0.9 | the starting volume related to the equilibrium structure
-**vol_end** | Float | 1.1 | the biggest volume related to the equilibrium structure
-**vol_step** | Float | 0.01 | the volume increment related to the equilibrium structure
-**vol_abs** | Boolean | false | whether to treat vol_start and vol_end as absolute volume or not (as relative volume), default = false
-
-Key words for **Elastic**
-
-Key words | data structure | example | description
----|---|---|---
-norm_deform | Float | 2e-2 | specifying the deformation in xx, yy, zz, default = 2e-3
-shear_deform | Float | 5e-2 | specifying the deformation in other directions, default = 5e-3
-
-Key words for **Vacancy**
-
-Key words | data structure | example | description
----|---|---|---
-supercell | Lisf of Int | [3,3,3] | the supercell to be constructed, default = [1,1,1]
-
-Key words for **Interstitial**
-
-Key words | data structure | example | description
----|---|---|---
-**insert_ele** | Lisf of String | ["Al"] | the element to be inserted
-supercell | Lisf of Int | [3,3,3] | the supercell to be constructed, default = [1,1,1]
-conf_filters | Dict | "min_dist": 1.5 | filter out the undesirable configuration
-
-Key words for **Surface**
-
-Key words | data structure | example | description
----|---|---|---
-**min_slab_size** | Int | 10 | minimum size of slab thickness
-**min_vacuum_size** | Int | 11 | minimum size of vacuum width
-pert_xz | Float | 0.01 | perturbation through xz direction used to compute surface energy, default = 0.01
-max_miller | Int | 2 | the maximum miller index
-
-#### II. Property: make
-
-```bash
-dpgen autotest make property.json
-```
-**EOS output:**
-
-```
-confs/std-fcc/eos_00/
-|-- frozen_model.pb -> ../../../frozen_model.pb
-|-- task.000000
-|   |-- conf.lmp
-|   |-- eos.json
-|   |-- frozen_model.pb -> ../frozen_model.pb
-|   |-- in.lammps
-|   |-- inter.json
-|   |-- POSCAR
-|   |-- POSCAR.orig -> ../../relaxation/relax_task/CONTCAR
-|   `-- task.json
-|-- task.000001
-|   |-- conf.lmp
-|   |-- eos.json
-|   |-- frozen_model.pb -> ../frozen_model.pb
-|   |-- in.lammps
-|   |-- inter.json
-|   |-- POSCAR
-|   |-- POSCAR.orig -> ../../relaxation/relax_task/CONTCAR
-|   `-- task.json
-...
-`-- task.000019
-    |-- conf.lmp
-    |-- eos.json
-    |-- frozen_model.pb -> ../frozen_model.pb
-    |-- in.lammps
-    |-- inter.json
-    |-- POSCAR
-    |-- POSCAR.orig -> ../../relaxation/relax_task/CONTCAR
-    `-- task.json
+    "conf_dir":"confs/Al/std-fcc",
+    "key_id":"API key of Material project",
+    "task_type":"deepmd",
+    "task":"eos",
 ```
 
-`eos.json` records the `volume` and `scale` of the corresponding task.
-
-**Elastic output:**
-
+You need to add the specified paths of necessary `POTCAR` files in "potcar_map". The different `POTCAR` paths are separated by commas.
+Then you also need to add the folder path of particular configuration, which contains `POSCAR` file.
 ```
-confs/std-fcc/elastic_00/
-|-- equi.stress.json
-|-- frozen_model.pb -> ../../../frozen_model.pb
-|-- in.lammps
-|-- POSCAR -> ../relaxation/relax_task/CONTCAR
-|-- task.000000
-|   |-- conf.lmp
-|   |-- frozen_model.pb -> ../frozen_model.pb
-|   |-- in.lammps -> ../in.lammps
-|   |-- inter.json
-|   |-- POSCAR
-|   |-- strain.json
-|   `-- task.json
-|-- task.000001
-|   |-- conf.lmp
-|   |-- frozen_model.pb -> ../frozen_model.pb
-|   |-- in.lammps -> ../in.lammps
-|   |-- inter.json
-|   |-- POSCAR
-|   |-- strain.json
-|   `-- task.json
-...
-`-- task.000023
-    |-- conf.lmp
-    |-- frozen_model.pb -> ../frozen_model.pb
-    |-- in.lammps -> ../in.lammps
-    |-- inter.json
-    |-- POSCAR
-    |-- strain.json
-    `-- task.json
+"confs/[element or alloy]/[std-* or mp-**]"
+std-*: standard structures, * can be fcc, bcc, hcp and so on.
+mp-**: ** means Material id from Material Project.
 ```
+Usually, if you add the relative path of POSCAR as the above format,
+`dpgen test` will check the existence of such file and automatically downloads the standard and existed configurations of the given element or alloy from Materials Project and stores them in **confs** folder, which needs the API key of Materials project.
 
-`equi.stress.json` records the stress information of the equilibrium task and `strain.json` records the deformation information of the corresponding task.
++ `task_type` contains 3 optional types for testing, i.e. **vasp**, **deepmd** and **meam**.
++ `task` contains 7 options, **equi**, **eos**, **elastic**, **vacancy**, **interstitial**, **surf** and **all**. The option **all** can do all the tasks.
 
-**Vacancy output:**
+It is worth noting that the subsequent tasks need to rely on the calculation results of the equilibrium state, so it is necessary to give priority to the calculation of the equilibrium state while testing. And due to the stable consideration, we recommand you to test the equilibrium state of **vasp** before other tests.
 
-```
-confs/std-fcc/vacancy_00/
-|-- frozen_model.pb -> ../../../frozen_model.pb
-|-- in.lammps
-|-- POSCAR -> ../relaxation/relax_task/CONTCAR
-`-- task.000000
-    |-- conf.lmp
-    |-- frozen_model.pb -> ../frozen_model.pb
-    |-- in.lammps -> ../in.lammps
-    |-- inter.json
-    |-- POSCAR
-    |-- supercell.json
-    `-- task.json
-```
-`supercell.json` records the supercell size information of the corresponding task.
-
-**Interstitial output:**
-
-```
-confs/std-fcc/interstitial_00/
-|-- element.out
-|-- frozen_model.pb -> ../../../frozen_model.pb
-|-- in.lammps
-|-- POSCAR -> ../relaxation/relax_task/CONTCAR
-|-- task.000000
-|   |-- conf.lmp
-|   |-- frozen_model.pb -> ../frozen_model.pb
-|   |-- in.lammps -> ../in.lammps
-|   |-- inter.json
-|   |-- POSCAR
-|   |-- supercell.json
-|   `-- task.json
-`-- task.000001
-    |-- conf.lmp
-    |-- frozen_model.pb -> ../frozen_model.pb
-    |-- in.lammps -> ../in.lammps
-    |-- inter.json
-    |-- POSCAR
-    |-- supercell.json
-    `-- task.json
-```
-
-`element.out` records the inserted element type of each task and `supercell.json` records the supercell size information of the corresponding task.
-
-**Surface output:**
-
-```
-confs/std-fcc/surface_00/
-|-- frozen_model.pb -> ../../../frozen_model.pb
-|-- in.lammps
-|-- POSCAR -> ../relaxation/relax_task/CONTCAR
-|-- task.000000
-|   |-- conf.lmp
-|   |-- frozen_model.pb -> ../frozen_model.pb
-|   |-- in.lammps -> ../in.lammps
-|   |-- inter.json
-|   |-- miller.json
-|   |-- POSCAR
-|   |-- POSCAR.tmp
-|   `-- task.json
-|-- task.000001
-|   |-- conf.lmp
-|   |-- frozen_model.pb -> ../frozen_model.pb
-|   |-- in.lammps -> ../in.lammps
-|   |-- inter.json
-|   |-- miller.json
-|   |-- POSCAR
-|   |-- POSCAR.tmp
-|   `-- task.json
-...
-`-- task.000008
-    |-- conf.lmp
-    |-- frozen_model.pb -> ../frozen_model.pb
-    |-- in.lammps -> ../in.lammps
-    |-- inter.json
-    |-- miller.json
-    |-- POSCAR
-    |-- POSCAR.tmp
-    `-- task.json
-```
-
-`miller.json` records the miller index of the corresponding task.
-
-#### III. Property: run
-
-```bash
-nohup dpgen autotest run property.json machine-ali.json > run.result 2>&1 &
-```
-the result file `log.lammps`, `dump.relax`, and `outlog` would be sent back.
-
-#### IV. Property: post
-
-```bash
-dpgen autotest post property.json
-```
-**EOS output:**
-
-`reult.out:`
-
-```
-conf_dir: /root/auto_test_example/deepmd/confs/std-fcc/eos_00
- VpA(A^3)  EpA(eV)
- 14.808   -3.7194
- 14.973   -3.7242
- 15.138   -3.7285
- 15.302   -3.7323
- 15.467   -3.7356
- 15.631   -3.7385
- 15.796   -3.7409
- 15.960   -3.7428
- 16.125   -3.7442
- 16.289   -3.7451
- 16.454   -3.7454
- 16.618   -3.7451
- 16.783   -3.7440
- 16.947   -3.7423
- 17.112   -3.7396
- 17.277   -3.7360
- 17.441   -3.7314
- 17.606   -3.7254
- 17.770   -3.7180
- 17.935   -3.7088
- ```
-
- `result.json:`
-
- ```json
- {
-    "14.808453313267595": -3.7194474,
-    "14.972991683415014": -3.7242038,
-    "15.13753005356243": -3.7284845,
-    "15.30206842370985": -3.7322877,
-    "15.466606793857267": -3.7356189,
-    "15.631145164004685": -3.7384827,
-    "15.7956835341521": -3.7408759,
-    "15.96022190429952": -3.7427885,
-    "16.12476027444694": -3.7441995,
-    "16.289298644594354": -3.7450777,
-    "16.453837014741772": -3.7453815,
-    "16.61837538488919": -3.7450585,
-    "16.782913755036606": -3.7440445,
-    "16.947452125184025": -3.7422635,
-    "17.111990495331444": -3.7396287,
-    "17.276528865478863": -3.736038,
-    "17.441067235626278": -3.7313635,
-    "17.605605605773697": -3.7254247,
-    "17.770143975921115": -3.7179689,
-    "17.934682346068534": -3.7087655
-}
-```
-
-**Elastic output:**
-
-`result.out:`
-
-```
-/root/auto_test_example/deepmd/confs/std-fcc/elastic_00
- 134.91   54.33   51.80    3.57   -0.00   -0.00
-  54.56  134.60   51.80   -3.54    0.00    0.00
-  51.91   51.91  137.02   -0.00    0.00    0.00
-   3.88   -3.77   -1.28   35.41    0.00    0.00
-  -0.00    0.00    0.00    0.00   35.38    3.86
-   0.00    0.00    0.00    0.00    4.03   38.38
-# Bulk   Modulus BV = 80.32 GPa
-# Shear  Modulus GV = 38.41 GPa
-# Youngs Modulus EV = 99.38 GPa
-# Poission Ratio uV = 0.29
-```
-
-`result.json:`
-
+The second part is the computational settings for vasp and lammps. According to your actual needs， you can choose to add the paths of specific INCAR or use the simplified INCAR by setting `vasp_params`. The priority of specified INCAR is higher than using `vasp_params`. The most important setting is to add the folder path `model_dir` of **deepmd** model and supply the corresponding element type map. Besides, `dpgen test` also is able to call common lammps packages, such as **meam**.
 ```json
-{
-    "elastic_tensor": [
-        134.90955999999997,
-        54.329958699999985,
-        51.802386099999985,
-        3.5745279599999993,
-        -1.3886325999999648e-05,
-        -1.9638233999999486e-05,
-        54.55840299999999,
-        134.59654699999996,
-        51.7972336,
-        -3.53972684,
-        1.839568799999963e-05,
-        8.756799399999951e-05,
-        51.91324859999999,
-        51.913292199999994,
-        137.01763799999998,
-        -5.090339399999969e-05,
-        6.99251629999996e-05,
-        3.736478699999946e-05,
-        3.8780564440000007,
-        -3.770445632,
-        -1.2766205999999956,
-        35.41343199999999,
-        2.2479590800000023e-05,
-        1.3837692000000172e-06,
-        -4.959999999495933e-06,
-        2.5800000003918792e-06,
-        1.4800000030874965e-06,
-        2.9000000008417968e-06,
-        35.375960199999994,
-        3.8608356,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        4.02554856,
-        38.375018399999995
-    ],
-    "BV": 80.3153630222222,
-    "GV": 38.40582656,
-    "EV": 99.37716395728943,
-    "uV": 0.2937771799031088
-}
+"relax_incar":"somewhere/relax_incar",
+"scf_incar":"somewhere/scf_incar",
+"vasp_params":	{
+	"ecut":		650,
+	"ediff":	1e-6,
+	"kspacing":	0.1,
+	"kgamma":	false,
+	"npar":		1,
+	"kpar":		1,
+	"_comment":	" that's all "
+    },
+    "lammps_params":    {
+        "model_dir":"somewhere/example/Al_model",
+        "type_map":["Al"],
+        "model_name":false,
+        "model_param_type":false
+    },
 ```
+The last part is the optional settings for various tasks mentioned above. You can change the parameters according to actual needs.
 
-**Vacancy output:**
 
-`result.out:`
+param.json in a dictionary.
 
-```
-/root/auto_test_example/deepmd/confs/std-fcc/vacancy_00
-Structure: 	Vac_E(eV)  E(eV) equi_E(eV)
-[3, 3, 3]-task.000000:   0.735  -96.645 -97.380
-```
+| Fields  | Type  | Example | Discription  |
+| :---------------- | :--------------------- | :------------- | :----------------|
+| potcar_map | dict | {"Al": "example/POTCAR"} |a  dict like { "element" : "position of POTCAR"  } |
+| conf_dir | path like string | "confs/Al/std-fcc" | the dir which contains vasp's POSCAR  |
+| key_id | string| "DZIwdXCXg1fiXXXXXX" |the API key of Material project|
+| task_type | string | "vasp" | task type, one of deepmd vasp meam |
+| task | string or list | "equi" | task, one or several tasks from { equi, eos, elastic, vacancy, interstitial, surf } or all stands for all tasks  |
+| vasp_params| dict | seeing below | params relating to vasp INCAR|
+| lammps_params | dict| seeing below| params relating to lammps |
 
-`result.json:`
+The keys in param["vasp_params"] is shown below.
 
+| Fields  | Type  | Example | Discription  |
+| :---------------- | :--------------------- | :---------------- | :----------------|
+| ecut | real number | 650  | the plane wave cutoff for grid.  |
+| ediff | real number | 1e-6 |Tolerance of Density Matrix |
+| kspacing | real number | 0.1 | Sample factor in Brillouin zones |
+| kgamma | boolen | false | whether generate a Gamma centered grid |
+| npar | positive integer | 1 | the number of k-points that are to be treated in parallel  |
+| kpar | positive integer | 1 | the number of bands that are treated in parallel |
+
+the keys in param["lammps_params"].
+
+| Key  | Type  | Example | Discription  |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+| model_dir | path like string | "example/Al_model" | the model dir which contains .pb file  |
+| type_map | list of string | ["Al"] | a list contains the element, usually useful for multiple element situation |
+| model_name | boolean |  false |  |
+| model_param_type | boolean |  false |  |
+
+### auto_test tasks
+#### 00.equi
 ```json
-{
-    "[3, 3, 3]-task.000000": [
-        0.7352769999999964,
-        -96.644642,
-        -97.379919
-    ]
-}
+    "_comment":"00.equi",
+    "store_stable":true,
+```
++ `store_stable`:(boolean) whether to store the stable energy and volume
+
+param.json.
+
+| Field  | Type | Example | Discription |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+| EpA(eV) | real number | -3.7468 | the potential energy of a atom|
+| VpA(A^3)| real number | 16.511| theEquilibrium volume of a atom  |
+
+test results
+```
+conf_dir:        EpA(eV)  VpA(A^3)
+confs/Al/std-fcc  -3.7468   16.511
 ```
 
-**Interstitial output:**
+| Field  | Type | Example | Discription |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+| EpA(eV) | real number | -3.7468 | the potential energy of a atom|
+| VpA(A^3)| real number | 16.511| theEquilibrium volume of a atom  |
 
-`result.out:`
-
+#### 01.eos
+```json
+    "_comment": "01.eos",
+    "vol_start":	12,
+    "vol_end":		22,
+    "vol_step":		0.5,
 ```
-/root/auto_test_example/deepmd/confs/std-fcc/interstitial_00
++ `vol_start`, `vol_end` and `vol_step` determine the volumetric range and accuracy of the **eos**.
+
+test results
+```
+conf_dir:confs/Al/std-fcc
+VpA(A^3)  EpA(eV)
+15.500   -3.7306
+16.000   -3.7429
+16.500   -3.7468
+17.000   -3.7430
+```
+
+
+| Field  | Type| Example| Discription  |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+| EpA(eV) | list of real number | [15.5,16.0,16.5,17.0] | the potential energy of a atom in  quilibrium state|
+| VpA(A^3)| list of real number |[-3.7306, -3.7429, -3.746762, -3.7430] | the equilibrium volume of a atom  |
+
+#### 02.elastic
+```json
+    "_comment": "02.elastic",
+    "norm_deform":	2e-2,
+    "shear_deform":	5e-2,
+```
++ `norm_deform` and `shear_deform` are the scales of material deformation.
+This task uses the stress-strain relationship to calculate the elastic constant.
+
+|Key  | Type  | Example | Discription  |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+| norm_deform | real number | 0.02  | uniaxial deformation range  |
+| shear_deform | real number | 0.05| shear deformation range  |
+
+test results
+```
+conf_dir:confs/Al/std-fcc
+130.50   57.45   54.45    4.24    0.00    0.00
+57.61  130.31   54.45   -4.29   -0.00   -0.00
+54.48   54.48  133.32   -0.00   -0.00   -0.00
+4.49   -4.02   -0.89   33.78    0.00   -0.00
+-0.00   -0.00   -0.00   -0.00   33.77    4.29
+0.00   -0.00   -0.00   -0.00    4.62   36.86
+# Bulk   Modulus BV = 80.78 GPa
+# Shear  Modulus GV = 36.07 GPa
+# Youngs Modulus EV = 94.19 GPa
+# Poission Ratio uV = 0.31
+```
+
+| Field  | Type | Example | Discription |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+| elastic module(GPa)| 6*6 matrix of real number| [[130.50   57.45   54.45    4.24    0.00    0.00] [57.61  130.31   54.45   -4.29   -0.00   -0.00]  [54.48   54.48  133.32   -0.00   -0.00   -0.00]   [4.49   -4.02   -0.89   33.78    0.00   -0.00]  [-0.00   -0.00   -0.00   -0.00   33.77    4.29] [0.00   -0.00   -0.00   -0.00    4.62   36.86]]| Voigt-notation elastic module;sequence of row and column is (xx, yy, zz, yz, zx, xy)|
+| bulk modulus(GPa) | real number | 80.78 | bulk modulus |
+| shear modulus(GPa) | real number | 36.07 | shear modulus |
+| Youngs Modulus(GPa) | real number | 94.19 | Youngs Modulus|
+| Poission Ratio | real number | 0.31 | Poission Ratio  |
+
+
+
+#### 03.vacancy
+```json
+    "_comment":"03.vacancy",
+    "supercell":[3,3,3],
+```
++ `supercell`:(list of integer) the supercell size used to generate vacancy defect and interstitial defect
+
+|Key  | Type  | Example | Discription  |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+| supercell | list of integer | [3,3,3] | the supercell size used to generate vacancy defect and interstitial defect |
+
+test result
+```
+conf_dir:confs/Al/std-fcc
+Structure:      Vac_E(eV)  E(eV) equi_E(eV)
+struct-3x3x3-000:   0.859  -96.557 -97.416
+```
+| Field  | Type | Example | Discription |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+|Structure| list of string |['struct-3x3x3-000'] | structure name|
+| Vac_E(eV) | real number |0.723 | the vacancy formation energy |
+| E(eV) | real number | -96.684 | potential energy of the vacancy configuration |
+| equi_E(eV) | real number |-97.407 | potential energy of the equilibrium state|
+
+#### 04.interstitial
+```json
+    "_comment":"04.interstitial",
+    "insert_ele":["Al"],
+    "reprod-opt":false,
+```
++ `insert_ele`:(list of string) the elements used to generate point interstitial defect
++ `repord-opt`:(boolean) whether to reproduce trajectories of interstitial defect
+
+|Key  | Type  | Example | Discription  |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+| insert_ele | list of string | ["Al"] | the elements used to generate point interstitial defect |
+| reprod-opt | boolean | false | whether to reproduce trajectories of interstitial defect|
+
+test result
+```
+conf_dir:confs/Al/std-fcc
 Insert_ele-Struct: Inter_E(eV)  E(eV) equi_E(eV)
-Al-[3, 3, 3]-task.000000:   4.023  -100.848 -104.871
-Al-[3, 3, 3]-task.000001:   2.783  -102.088 -104.871
+struct-Al-3x3x3-000:   3.919  -100.991 -104.909
+struct-Al-3x3x3-001:   2.681  -102.229 -104.909
 ```
+| Field  | Type | Example | Discription |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+|Structure| string |'struct-Al-3x3x3-000' | structure name|
+| Inter_E(eV) | real number |0.723 | the interstitial formation energy |
+| E(eV) | real number | -96.684 | potential energy of the interstitial configuration |
+| equi_E(eV) | real number |-97.407 | potential energy of the equilibrium state|
 
-`result.json:`
+#### 05.surface
 
 ```json
-{
-    "Al-[3, 3, 3]-task.000000": [
-        4.022952000000004,
-        -100.84773,
-        -104.870682
-    ],
-    "Al-[3, 3, 3]-task.000001": [
-        2.7829520000000088,
-        -102.08773,
-        -104.870682
-    ]
-}
+    "_comment": "05.surface",
+    "min_slab_size":	10,
+    "min_vacuum_size":	11,
+    "_comment": "pert xz to work around vasp bug...",
+    "pert_xz":		0.01,
+    "max_miller": 2,
+    "static-opt":false,
+    "relax_box":false,
+```
++ `min_slab_size` and `min_vacuum_size` are the minimum size of slab thickness  and  the vacuume width.
++ `pert_xz` is the perturbation through xz direction used to compute surface energy.
++ `max_miller` (integer) is the maximum miller index
++ `static-opt`:(boolean) whether to use atomic relaxation to compute surface energy. if false, the structure will be relaxed.
++ `relax_box`:(boolean) set true if the box is relaxed, otherwise only relax atom positions.
+
+|Key  | Type  | Example | Discription  |
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+| min_slab_size| real number| 10 |  the minimum size of slab thickness |
+|min_vacuum_size | real number| 11 |  the minimum size of  the vacuume width |
+|pert_xz  | real number| 0.01 |  the perturbation through xz direction used to compute surface energy |
+|max_miller  | integer| 2 |  the maximum miller index |
+|static-opt|boolean| false | whether to use atomic relaxation to compute surface energy. if false, the structure will be relaxed. |
+|relax_box | boolean | false | set true if the box is relaxed, otherwise only relax atom positions |
+
+test result
+```
+conf_dir:confs/Al/std-fcc
+Miller_Indices:         Surf_E(J/m^2) EpA(eV) equi_EpA(eV)
+struct-000-m1.1.1m:        0.673     -3.628   -3.747
+struct-001-m2.2.1m:        0.917     -3.592   -3.747
+```
+| Field  | Type | Example| Discription|
+| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
+|Miller_Indices| string | struct-000-m1.1.1m | Miller Indices|
+|Surf_E(J/m^2)| real number | 0.673 | the surface formation energy |
+| EpA(eV) | real number | -3.628 | potential energy of the surface configuration |
+| equi_EpA | real number | -3.747 | potential energy of the equilibrium state|
+
+### The content of the auto_test
+To know what actually will dpgen autotest do, including the lammps and vasp script, the input file and atom configuration file auto_test will generate, please refer to https://hackmd.io/@yeql5ephQLaGJGgFgpvIDw/rJY1FO92B
+
+## Simplify
+When you have a dataset containing lots of repeated data, this step will help you simplify your dataset. The workflow contains three stages: train, model_devi, and fp. The train stage and the fp stage are as the same as the run step, and the model_devi stage will calculate model deviations of the rest data that has not been confirmed accurate. Data with small model deviations will be confirmed accurate, while the program will pick data from those with large model deviations to the new dataset.
+
+Use the following script to start the workflow:
+```bash
+dpgen simplify param.json machine.json
 ```
 
-**Surface output:**
-
-`result.out:`
-
-```
-/root/auto_test_example/deepmd/confs/std-fcc/surface_00
-Miller_Indices: 	Surf_E(J/m^2) EpA(eV) equi_EpA(eV)
-[1, 1, 1]-task.000000:          0.805      -3.604   -3.745
-[2, 2, 1]-task.000001:          0.991      -3.578   -3.745
-[1, 1, 0]-task.000002:          0.946      -3.553   -3.745
-[2, 2, -1]-task.000003:         0.987      -3.559   -3.745
-[2, 1, 1]-task.000004:          1.014      -3.563   -3.745
-[2, 1, -1]-task.000005:         1.066      -3.543   -3.745
-[2, 1, -2]-task.000006:         1.034      -3.551   -3.745
-[2, 0, -1]-task.000007:         0.957      -3.569   -3.745
-[2, -1, -1]-task.000008:        0.943      -3.577   -3.745
-```
-
-`result.json:`
-
+Here is an example of `param.json` for QM7 dataset:
 ```json
 {
-    "[1, 1, 1]-task.000000": [
-        0.8051037974207992,
-        -3.6035018,
-        -3.7453815
+    "type_map": [
+        "C",
+        "H",
+        "N",
+        "O",
+        "S"
     ],
-    "[2, 2, 1]-task.000001": [
-        0.9913881928811771,
-        -3.5781115999999997,
-        -3.7453815
+    "mass_map": [
+        12.011,
+        1.008,
+        14.007,
+        15.999,
+        32.065
     ],
-    "[1, 1, 0]-task.000002": [
-        0.9457333586026173,
-        -3.5529366000000002,
-        -3.7453815
+    "pick_data": "/scratch/jz748/simplify/qm7",
+    "init_data_prefix": "",
+    "init_data_sys": [],
+    "sys_batch_size": [
+        "auto"
     ],
-    "[2, 2, -1]-task.000003": [
-        0.9868013100872397,
-        -3.5590607142857142,
-        -3.7453815
-    ],
-    "[2, 1, 1]-task.000004": [
-        1.0138239046484236,
-        -3.563035875,
-        -3.7453815
-    ],
-    "[2, 1, -1]-task.000005": [
-        1.0661817319108005,
-        -3.5432459166666668,
-        -3.7453815
-    ],
-    "[2, 1, -2]-task.000006": [
-        1.034003253044026,
-        -3.550884125,
-        -3.7453815
-    ],
-    "[2, 0, -1]-task.000007": [
-        0.9569958287615818,
-        -3.5685403333333334,
-        -3.7453815
-    ],
-    "[2, -1, -1]-task.000008": [
-        0.9432935501134583,
-        -3.5774615714285716,
-        -3.7453815
-    ]
-}
-```
-
-### Refine 
-
-(Universal for all property tests)
-
-#### I. Refine: get started and input examples
-
-In some cases, we want to refine the calculation results of a property based on previous results by using different convergence criteria like `EDIFF` and `EDIFFG` or higher `ENCUT`. If the parameter of `init_from_suffix` and `output_suffix` are both provided in the input file, `refine` would start based on the results in `init_from_suffix` directory and output the results to `output_suffix` directory. Otherwise, the calculation results would be output to the default suffix `00`. An example of the input file is given below:
-```json
-{
-    "structures":       ["confs/std-*"],
-    "interaction": {
-        "type":          "deepmd",
-        "model":         "frozen_model.pb",
-        "deepmd_version":"1.2.0",
-        "type_map":     {"Al": 0}
+    "numb_models": 4,
+    "default_training_param": {
+        "model": {
+            "type_map": [
+                "C",
+                "H",
+                "N",
+                "O",
+                "S"
+            ],
+            "descriptor": {
+                "type": "se_a",
+                "sel": [
+                    7,
+                    16,
+                    3,
+                    3,
+                    1
+                ],
+                "rcut_smth": 1.00,
+                "rcut": 6.00,
+                "neuron": [
+                    25,
+                    50,
+                    100
+                ],
+                "resnet_dt": false,
+                "axis_neuron": 12
+            },
+            "fitting_net": {
+                "neuron": [
+                    240,
+                    240,
+                    240
+                ],
+                "resnet_dt": true
+            }
+        },
+        "learning_rate": {
+            "type": "exp",
+            "start_lr": 0.001,
+            "decay_steps": 10,
+            "decay_rate": 0.99
+        },
+        "loss": {
+            "start_pref_e": 0.02,
+            "limit_pref_e": 1,
+            "start_pref_f": 1000,
+            "limit_pref_f": 1,
+            "start_pref_v": 0,
+            "limit_pref_v": 0,
+            "start_pref_pf": 0,
+            "limit_pref_pf": 0
+        },
+        "training": {
+            "set_prefix": "set",
+            "stop_batch": 10000,
+            "disp_file": "lcurve.out",
+            "disp_freq": 1000,
+            "numb_test": 1,
+            "save_freq": 1000,
+            "save_ckpt": "model.ckpt",
+            "disp_training": true,
+            "time_training": true,
+            "profiling": false,
+            "profiling_file": "timeline.json"
+        },
+        "_comment": "that's all"
     },
-    "properties": [
-        {
-        "type":             "vacancy",
-        "init_from_suffix": "00",
-        "output_suffix":    "01",
-        "cal_setting":     {"input_prop":  "lammps_input/lammps_high"}
-        }
-        ]
-}
-```
-
-In this example, `refine` would output the results to `vacancy_01` based on the previous results in `vacancy_00` by using a different input commands file for lammps.
-
-#### II. Refine: make
-
-```bash
-dpgen autotest make refine.json
-tree confs/std-fcc/vacancy_01/
-```
-the output will be:
-
-```
-confs/std-fcc/vacancy_01/
-|-- frozen_model.pb -> ../../../frozen_model.pb
-|-- in.lammps
-`-- task.000000
-    |-- conf.lmp
-    |-- frozen_model.pb -> ../frozen_model.pb
-    |-- in.lammps -> ../in.lammps
-    |-- inter.json
-    |-- POSCAR -> ../../vacancy_00/task.000000/CONTCAR
-    |-- supercell.json -> ../../vacancy_00/task.000000/supercell.json
-    `-- task.json
-```
-
-an new directory `vacancy_01` would be established and the starting configuration links to previous results.
-
-#### III. Refine: run
-
-```bash
-nohup dpgen autotest run refine.json machine-ali.json > run.result 2>&1 &
-```
-the run process of `refine` is similar to before.
-
-#### IV. Refine: post
-
-```bash
-dpgen autotest post refine.json
-```
-the post process of `refine` is similar to the corresponding property.
-
-### Reproduce
-
-(Universal for all property tests except for `elastic`)
-
-#### I. Reproduce: get started and input examples
-
-Some times we want to reproduce the initial results with the same configurations for cross validation. This version of auto-test package can accomplish this successfully in all property types except for `Elastic`. An input example for using `deepmd` to reproduce the `VASP` Interstitial results is given as below:
-```json
-{
-    "structures":       ["confs/std-*"],
-    "interaction": {
-        "type":          "deepmd",
-        "model":         "frozen_model.pb",
-        "deepmd_version":"1.2.0",
-        "type_map":     {"Al": 0}
+    "fp_style": "gaussian",
+    "shuffle_poscar": false,
+    "fp_task_max": 1000,
+    "fp_task_min": 10,
+    "fp_pp_path": "/home/jzzeng/",
+    "fp_pp_files": [],
+    "fp_params": {
+        "keywords": "mn15/6-31g** force nosymm scf(maxcyc=512)",
+        "nproc": 28,
+        "multiplicity": 1,
+        "_comment": " that's all "
     },
-    "properties": [
-        {
-        "type":             "interstitial",
-        "reproduce":        true,
-        "init_from_suffix": "00",
-        "init_data_path":   "../vasp/confs",
-        "reprod_last_frame":       false
-        }
-        ]
+    "init_pick_number":100,
+    "iter_pick_number":100,
+    "e_trust_lo":1e10,
+    "e_trust_hi":1e10,
+    "f_trust_lo":0.25,
+    "f_trust_hi":0.45,
+    "_comment": " that's all "
 }
 ```
 
-`reproduce` denotes whether to do `reproduce` or not and the default value is False. 
+Here `pick_data` is the directory to data to simplify where the program recursively detects systems `System` with `deepmd/npy` format. `init_pick_number` and `iter_pick_number` are the numbers of picked frames. `e_trust_lo`, `e_trust_hi` mean the range of the deviation of the frame energy, and `f_trust_lo` and `f_trust_hi` mean the range of the max deviation of atomic forces in a frame. `fp_style` can only be `gaussian` currently. Other parameters are as the same as those of generator.
 
-`init_data_path` is the path of VASP or LAMMPS initial data to be reproduced. `init_from_suffix` is the suffix of the initial data and the default value is "00". In this case, the VASP Interstitial results are stored in `../vasp/confs/std-*/interstitial_00` and the reproduced Interstitial results would be in `deepmd/confs/std-*/interstitial_reprod`. 
-
-`reprod_last_frame` denotes if only the last frame is used in reproduce. The default value is True for eos and surface, but is False for vacancy and interstitial.
-
-#### II. Reproduce: make
-
-```bash
-dpgen autotest make reproduce.json
-tree confs/std-fcc/interstitial_reprod/
-```
-the output will be:
-
-```
-confs/std-fcc/interstitial_reprod/
-|-- frozen_model.pb -> ../../../frozen_model.pb
-|-- in.lammps
-|-- task.000000
-|   |-- conf.lmp
-|   |-- frozen_model.pb -> ../frozen_model.pb
-|   |-- in.lammps -> ../in.lammps
-|   |-- inter.json
-|   |-- POSCAR
-|   `-- task.json
-|-- task.000001
-|   |-- conf.lmp
-|   |-- frozen_model.pb -> ../frozen_model.pb
-|   |-- in.lammps -> ../in.lammps
-|   |-- inter.json
-|   |-- POSCAR
-|   `-- task.json
-...
-`-- task.000038
-    |-- conf.lmp
-    |-- frozen_model.pb -> ../frozen_model.pb
-    |-- in.lammps -> ../in.lammps
-    |-- inter.json
-    |-- POSCAR
-    `-- task.json
-```
-
-every singe frame in the initial data is split into each task and the following `in.lammps` would help to do the `static` calculation:
-
-```txt
-clear
-units 	          metal
-dimension	  3
-boundary	  p p p
-atom_style	  atomic
-box               tilt large
-read_data         conf.lmp
-mass              1 26.982
-neigh_modify      every 1 delay 0 check no
-pair_style deepmd frozen_model.pb
-pair_coeff
-compute           mype all pe
-thermo            100
-thermo_style      custom step pe pxx pyy pzz pxy pxz pyz lx ly lz vol c_mype
-dump              1 all custom 100 dump.relax id type xs ys zs fx fy fz
-run               0
-variable          N equal count(all)
-variable          V equal vol
-variable          E equal "c_mype"
-variable          tmplx equal lx
-variable          tmply equal ly
-variable          Pxx equal pxx
-variable          Pyy equal pyy
-variable          Pzz equal pzz
-variable          Pxy equal pxy
-variable          Pxz equal pxz
-variable          Pyz equal pyz
-variable          Epa equal ${E}/${N}
-variable          Vpa equal ${V}/${N}
-variable          AA equal (${tmplx}*${tmply})
-print "All done"
-print "Total number of atoms = ${N}"
-print "Final energy per atoms = ${Epa}"
-print "Final volume per atoms = ${Vpa}"
-print "Final Base area = ${AA}"
-print "Final Stress (xx yy zz xy xz yz) = ${Pxx} ${Pyy} ${Pzz} ${Pxy} ${Pxz} ${Pyz}"
-```
-
-#### III. Reproduce: run
-
-```bash
-nohup dpgen autotest run reproduce.json machine-ali.json > run.result 2>&1 &
-```
-
-the run process of `reproduce` is similar to before.
-
-#### IV. Reproduce: post
-
-```bash
-dpgen autotest post reproduce.json
-```
-
-the output will be:
-
-`result.out:`
-
-```
-/root/auto_test_example/deepmd/confs/std-fcc/interstitial_reprod
-Reproduce: Initial_path Init_E(eV/atom)  Reprod_E(eV/atom)  Difference(eV/atom)
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.020   -3.240   -0.220
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.539   -3.541   -0.002
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.582   -3.582   -0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.582   -3.581    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.594   -3.593    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.594   -3.594    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.598   -3.597    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.600   -3.600    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.600   -3.600    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.601   -3.600    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.602   -3.601    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.603   -3.602    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.603   -3.602    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.603   -3.602    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.603   -3.602    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.603   -3.602    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.603   -3.602    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000000  -3.603   -3.602    0.001
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.345   -3.372   -0.027
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.546   -3.556   -0.009
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.587   -3.593   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.593   -3.599   -0.006
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.600   -3.606   -0.006
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.600   -3.606   -0.006
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.624   -3.631   -0.006
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.634   -3.640   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.637   -3.644   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.637   -3.644   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.638   -3.645   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.638   -3.645   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.639   -3.646   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.639   -3.646   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.639   -3.646   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.639   -3.646   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.639   -3.646   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.639   -3.646   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.639   -3.646   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.639   -3.646   -0.007
-.../vasp/confs/std-fcc/interstitial_00/task.000001  -3.639   -3.646   -0.007
-```
-
-the comparison of the initial and reproduced results as well as the absolute path of the initial data is recorded.
-
-`result.json:`
-
-```json
-{
-    "/root/auto_test_example/vasp/confs/std-fcc/interstitial_00/task.000000": {
-        "nframes": 18,
-        "error": 0.0009738182472213228
-    },
-    "/root/auto_test_example/vasp/confs/std-fcc/interstitial_00/task.000001": {
-        "nframes": 21,
-        "error": 0.0006417039154057605
-    }
-}
-```
-
-the error analysis corresponding to the initial data is recorded and the error of the first frame is disregarded when all the frames are considered in reproduce.
 
 ## Set up machine
 ### new dpdispatcher update note
@@ -2360,130 +1207,6 @@ an example of new dpgen's machine.json
 }
 ```
 note1: the key "local_root" in dpgen's machine.json is always `./`
-
-### old dpdispatcher
-
-When switching into a new machine, you may modifying the `MACHINE`, according to the actual circumstance. Once you have finished, the `MACHINE` can be re-used for any DP-GEN tasks without any extra efforts.
-
-An example for `MACHINE` is:
-```json
-{
-  "train":
-    {
-      "machine": {
-        "batch": "slurm",
-        "hostname": "localhost",
-        "port": 22,
-        "username": "Angus",
-        "work_path": "....../work"
-      },
-      "resources": {
-        "numb_node": 1,
-        "numb_gpu": 1,
-        "task_per_node": 4,
-        "partition": "AdminGPU",
-        "exclude_list": [],
-        "source_list": [
-          "....../train_tf112_float.env"
-        ],
-        "module_list": [],
-        "time_limit": "23:0:0",
-        "qos": "data"
-      },
-      "command": "USERPATH/dp"
-    },
-  "model_devi":
-    {
-      "machine": {
-        "batch": "slurm",
-        "hostname": "localhost",
-        "port": 22,
-        "username": "Angus",
-        "work_path": "....../work"
-      },
-      "resources": {
-        "numb_node": 1,
-        "numb_gpu": 1,
-        "task_per_node": 2,
-        "partition": "AdminGPU",
-        "exclude_list": [],
-        "source_list": [
-          "......./lmp_tf112_float.env"
-        ],
-        "module_list": [],
-        "time_limit": "23:0:0",
-        "qos": "data"
-      },
-      "command": "lmp_serial",
-      "group_size": 1
-    },
-  "fp":
-    {
-      "machine": {
-        "batch": "slurm",
-        "hostname": "localhost",
-        "port": 22,
-        "username": "Angus",
-        "work_path": "....../work"
-      },
-      "resources": {
-        "task_per_node": 4,
-        "numb_gpu": 1,
-        "exclude_list": [],
-        "with_mpi": false,
-        "source_list": [],
-        "module_list": [
-          "mpich/3.2.1-intel-2017.1",
-          "vasp/5.4.4-intel-2017.1",
-          "cuda/10.1"
-        ],
-        "time_limit": "120:0:0",
-        "partition": "AdminGPU",
-        "_comment": "that's All"
-      },
-      "command": "vasp_gpu",
-      "group_size": 1
-    }
-}
-```
-Following table illustrates which key is needed for three types of machine: `train`,`model_devi`  and `fp`. Each of them is a list of dicts. Each dict can be considered as an independent environmnet for calculation.
-
- Key   | `train`          | `model_devi`                                                    | `fp`                                                     |
-| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
-| machine | NEED  | NEED | NEED
-| resources | NEED | NEED | NEED
-| command | NEED  |NEED |  NEED  
-| group_size | NEED | NEED | NEED |
-
-The following table gives explicit descriptions on keys in param.json.
-
-
- Key   | Type       | Example                                                  | Discription                                                     |
-| :---------------- | :--------------------- | :-------------------------------------- | :-------------------------------------------------------------|
-| machine | Dict | | Settings of the machine for TASK.
-| resources | Dict | | Resources needed for calculation.
-| # Followings are keys in resources
-| numb_node | Integer | 1 | Node count required for the job
-| task_per_node | Integer | 4 | Number of CPU cores required
-| numb_gpu | Integer | Integer | 4 | Number of GPUs required
-| manual_cuda_devices | Interger | 1 | Used with key "manual_cuda_multiplicity" specify the gpu number
-| manual_cuda_multiplicity |Interger | 5 | Used in 01.model_devi,used with key "manual_cuda_devices" specify the MD program number running on one GPU  at the same time,dpgen will  automatically allocate MD jobs on different GPU. This can improve GPU usage for GPU like V100.
-| node_cpu | Integer | 4 | Only for LSF. The number of CPU cores on each node that should be allocated to the job.
-| new_lsf_gpu | Boolean | false | **Only for LSF.** Control whether new syntax of GPU to be enabled. If enabled, DP-GEN will generate line like `#BSUB -gpu num=1:mode=shared:j_exclusive=yes` in job submission script. Only support LSF>=10.1.0.3, and `LSB_GPU_NEW_SYNTAX=Y` should be set. Default: `false`.
-| exclusive | Boolean | false | **Only for LSF, and only take effect when `new_lsf_gpu` enabled.** Control whether enable `j_exclusive` during running. Default: `false`.
-| source_list | List of string | "....../vasp.env" | Environment needed for certain job. For example, if "env" is in the list, 'source env' will be written in the script.
-| module_list | List of string | [ "Intel/2018", "Anaconda3"] | For example, If "Intel/2018" is in the list, "module load Intel/2018" will be written in the script.
-| partition | String  | "AdminGPU" | Partition / queue in which to run the job. |
-| time_limit | String (time format) | 23:00:00 | Maximal time permitted for the job |
-mem_limit | Interger | 16 | Maximal memory permitted to apply for the job.
-| with_mpi | Boolean | true | Deciding whether to use mpi for calculation. If it's true and machine type is Slurm, "srun" will be prefixed to `command` in the script.
-| qos | "string"| "bigdata" | Deciding priority, dependent on particular settings of your HPC.
-| allow_failure | Boolean | false | Allow the command to return a non-zero exit code.
-| # End of resources
-| command | String | "lmp_serial" | Executable path of software, such as `lmp_serial`, `lmp_mpi` and `vasp_gpu`, `vasp_std`, etc.
-| group_size | Integer | 5 | DP-GEN will put these jobs together in one submitting script.
-| user_forward_files | List of str | ["/path_to/vdw_kernel.bindat"] | These files will be uploaded in each calculation task. You should make sure provide the path exists. 
-| user_backward_files | List of str | ["HILLS"] | Besides DP-GEN's normal output, these files will be downloaded after each calculation. You should make sure these files can be generated.
 
 ## Troubleshooting
 1. The most common problem is whether two settings correspond with each other, including:
