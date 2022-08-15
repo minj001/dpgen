@@ -697,6 +697,68 @@ Suppose that we have a potential (can be DFT, DP, MEAM ...), `autotest` helps us
 
 A property is tested in three stages: `make`, `run` and `post`. `make` prepare all computational tasks that are needed to calculate the property. For example to calculate EOS, `autotest` prepare a series of tasks, each of which has a scaled configuration with certain volume, and all necessary input files necessary for starting a VASP or LAMMPS relaxation. `run` sends all the computational tasks to remote computational resources defined in a machine configuration file like `machine.json`, and automatically collect the results when remote calculations finish. `post` calculates the desired property from the collected results.
 
+### Task type
+
+Above all, before introducing relaxation and property calculations, every calculation need to define task type in `interaction` part, which would be included by input file (`relaxation.json` or `properties.json`). There are now six task types implemented in the package: `vasp`, `abacus`, `deepmd`, `meam`, `eam_fs`, and `eam_alloy`. The input examples of the `interaction` part of each type can be found below:
+
+**VASP**: 
+    
+The default of `potcar_prefix` is "".
+```json
+	"interaction": {
+		"type":		"vasp",
+		"incar":	"vasp_input/INCAR",
+		"potcar_prefix":"vasp_input",
+		"potcars":	{"Al": "POTCAR.al", "Mg": "POTCAR.mg"}
+	}
+```
+**ABACUS**: 
+    
+The default of `potcar_prefix` is "". The path of potcars/orb_files/deepks_desc is `potcar_prefix` + `potcars`/`orb_files`/`deepks_desc`.
+```json
+	"interaction": {
+		"type":		"abacus",
+		"incar":	"abacus_input/INPUT",
+		"potcar_prefix":"abacus_input",
+		"potcars":	{"Al": "pseudo_potential.al", "Mg": "pseudo_potential.mg"},
+		"orb_files": {"Al": "numerical_orb.al", "Mg": "numerical_orb.mg"},
+		"atom_masses": {"Al": 26.9815, "Mg":24.305},
+		"deepks_desc": "jle.orb"
+	}
+```
+**deepmd**:
+
+**Only 1** model can be used in autotest in one working directory and the default `"deepmd_version"` is **1.2.0**.
+
+```json
+	"interaction": {
+		"type":		 "deepmd",
+		"model":	 "frozen_model.pb", 
+		"type_map":      {"Al": 0, "Mg": 1},
+                "deepmd_version":"1.2.0"
+	}
+```
+**meam**:
+
+Please make sure the [USER-MEAMC package](https://lammps.sandia.gov/doc/Packages_details.html#pkg-user-meamc) has already been installed in LAMMPS.
+```json
+	"interaction": {
+		"type":		 "meam",
+		"model":	 ["meam.lib","AlMg.meam"],
+		"type_map":      {"Al": 1, "Mg": 2}
+	}
+```
+**eam_fs & eam_alloy**:
+
+Please make sure the [MANYBODY package](https://lammps.sandia.gov/doc/Packages_details.html#pkg-manybody) has already been installed in LAMMPS
+```json
+	"interaction": {
+		"type":		 "eam_fs (eam_alloy)", 
+		"model":	 "AlMg.eam.fs (AlMg.eam.alloy)", 
+		"type_map":      {"Al": 1, "Mg": 2}
+	}
+```
+
 ### Relaxation calculations
 
 The relaxation of a structure should be carried out before calculating all other properties. Then, we will introduce every step in details.
