@@ -13,6 +13,10 @@
          * [Init_surf](#init_surf)
       * [Run: Main Process of Generator](#run-main-process-of-generator)
       * [Test: Auto-test for Deep Generator](#test-auto-test-for-deep-generator)
+         * [Relaxation calculations](#relaxation-calculations)
+         * [Property calculations](#property-calculations)
+         * [Refine the calculation of a property](#refine-the-calculation-of-a-property)
+         * [Reproduce the calculation of a property](#reproduce-the-calculation-of-a-property)
       * [Set up machine](#set-up-machine)
       * [Troubleshooting](#troubleshooting)
       * [License](#license)
@@ -981,7 +985,7 @@ nohup dpgen autotest run refine.json machine-ali.json > run.result 2>&1 &
 dpgen autotest post refine.json
 ```
 
-### Reproduce
+### Reproduce the calculation of a property
 
 Some times we want to reproduce the initial results with the same configurations for cross validation. This version of auto-test package can accomplish this successfully in all property types except for `Elastic`. An input example for using `deepmd` to reproduce the `VASP` Interstitial results is given as below:
 
