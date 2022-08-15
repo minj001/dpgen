@@ -13,6 +13,7 @@
          * [Init_surf](#init_surf)
       * [Run: Main Process of Generator](#run-main-process-of-generator)
       * [Test: Auto-test for Deep Generator](#test-auto-test-for-deep-generator)
+         * [Task type](#task-type)
          * [Relaxation calculations](#relaxation-calculations)
          * [Property calculations](#property-calculations)
          * [Refine the calculation of a property](#refine-the-calculation-of-a-property)
